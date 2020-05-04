@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+
+mkdir articles
+mkdir html
+mkdir pages
+mkdir resources
+
+cat << 'EOF' > pages/index.md
+# Hello, world!
+EOF
