@@ -4,7 +4,7 @@ set -eu
 
 BLOG_ARTICLES="./articles"
 BLOG_INDEX="blog.md"
-BUILD="./build-page"
+BUILD="./bobo-build-page"
 PAGES="./pages"
 PUBLIC="./html"
 RESOURCES="./resources"
@@ -15,7 +15,6 @@ log() {
 
 build_directory(){
 	for i in "$1"/*.md; do
-		log "Building $i..."
 		"$BUILD" "$i" 
 	done
 }
@@ -42,7 +41,7 @@ cleanup() {
 
 build_common() {
 	log "Copying common files..."
-	cp -r "$RESOURCES"/* "$PUBLIC"/
+	cp -r "$RESOURCES"/* "$PUBLIC"/ || true
 }
 
 build_pages() {
