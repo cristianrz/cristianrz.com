@@ -11,7 +11,7 @@
 			<a href="index.html" id="blog-title">cristianrz</a>
 		</div>
 		<div id="article">
-			<h1>Performance of awk vs. other languages</h1>
+<h1>Performance of awk vs. other languages</h1>
 <h6>Mon  4 May 13:48:22 BST 2020</h6>
 <p>I was just wondering how would awk compare to other scripting languages such as
 Perl, Python, etc and, for fun, also Go and C. In the end it all comes down to what is the task that you
@@ -24,13 +24,13 @@ fast each language each is on "brute force" type of programs.</p>
 <pre><code>BEGIN {
 	max = 2 ** 22
 	ex = -1</code></pre>
-<pre><code>	for (i=1; i$article$lt;max; i++) {
+<pre><code>	for (i=1; i&lt;max; i++) {
 		ex = -ex
 		under = 2*i - 1
 		piplus = (4/under)*ex
 		pi = pi + piplus
 	}</code></pre>
-<pre><code>	printf $article$quot;%.f, %.10f\n$article$quot;,max,pi
+<pre><code>	printf &quot;%.f, %.10f\n&quot;,max,pi
 }</code></pre>
 <p>This represents the
 <a href="https://en.wikipedia.org/wiki/Leibniz_formula_for_%CF%80" target="_blank">
