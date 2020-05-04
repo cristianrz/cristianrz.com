@@ -74,3 +74,7 @@ th, td {
 	border:1px solid black;
 	padding: 5px;
 }
+
+code {
+	font-size: 18px;
+}
