@@ -1,0 +1,189 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta charset="utf-8"/>
+		<title>cristianrz</title>
+		<link rel="stylesheet" type="text/css" href="styles.css"/>
+	</head>
+	<body>
+		<a name="top"></a>
+		<div id="header">
+			<a href="index.html" id="blog-title">cristianrz</a>
+		</div>
+		<div id="article">
+<h1 id="makign-awk-usable-as-a-general-purpose-language">Makign AWK usable as a general purpose language</h1>
+<h6 id="fri-15-may-173309-bst-2020">Fri 15 May 17:33:09 BST 2020</h6>
+<h2 id="awks-ups-and-downs">Awk’s ups and downs</h2>
+<p>Following my previous article and somewhat obsession with awk lately I’ve had a thought about the upsides and downsides of using awk as a general purpose programming language.</p>
+<p>Note that in all this article I will just discuss about POSIX awk. There is a lot of issues that gawk has solved, but making gawk go over 1,000,000 is not worth it.</p>
+<p>In terms of upsides:</p>
+<ul>
+<li>performance compared to other scripting languages</li>
+<li>lightweight: Brian Kernighan implementation of awk is 9,000 lines of code. Python and Perl go over 1,000,000 lines of code.</li>
+<li>syntax: in the end syntax probably does not matter since one can get used to anything. But I like C, and having a syntax similar to C is a good point for me.</li>
+<li>portability: every POSIX compliant system is going to have an implementation of awk pre-installed. Even for Windows it is quite trivial to install a busybox port which contains a tiny awk implementation.</li>
+</ul>
+<p>Downsides:</p>
+<ul>
+<li>Still awfully slower than Go and C.</li>
+<li>Lack of libraries, specially to interact with the system.</li>
+<li>Lack of a debugger.</li>
+</ul>
+<h2 id="performance">Performance</h2>
+<p>The tests on my previous article, for that specific program, show that awk is faster, although not too much, than Perl and Python. I wasn’t very happy with this results and I continued testing other supposedly fast awk implementations. These were the results:</p>
+<table>
+<tr>
+<th>
+Time in ms
+</th>
+<th>
+Times slower than Go
+</th>
+<th>
+Language
+</th>
+</tr>
+<tr>
+<td>
+0.023
+</td>
+<td>
+1.0
+</td>
+<td>
+Go
+</td>
+</tr>
+<tr>
+<td>
+0.032
+</td>
+<td>
+1.4
+</td>
+<td>
+C
+</td>
+</tr>
+<tr>
+<td>
+0.096
+</td>
+<td>
+4.17
+</td>
+<td>
+awka
+</td>
+</tr>
+<tr>
+<td>
+0.230
+</td>
+<td>
+10.0
+</td>
+<td>
+Node.js
+</td>
+</tr>
+<tr>
+<td>
+0.476
+</td>
+<td>
+20.7
+</td>
+<td>
+mawk
+</td>
+</tr>
+<tr>
+<td>
+0.526
+</td>
+<td>
+22.9
+</td>
+<td>
+Lua
+</td>
+</tr>
+<tr>
+<td>
+1.311
+</td>
+<td>
+57.0
+</td>
+<td>
+awk
+</td>
+</tr>
+<tr>
+<td>
+1.431
+</td>
+<td>
+62.2
+</td>
+<td>
+Perl
+</td>
+</tr>
+<tr>
+<td>
+1.449
+</td>
+<td>
+63.0
+</td>
+<td>
+Python
+</td>
+</tr>
+<tr>
+<td>
+10.345
+</td>
+<td>
+449.8
+</td>
+<td>
+bc
+</td>
+</tr>
+</table>
+<p>Surprisingly mawk and awka are quite fast. Mawk is an AWK implementation by Mike Brennan based on a bytecode interpreter, whilst awka is a translator of AWK scripts into C code.</p>
+<p>Mawk results speak for themselves, so not much to comment about that.</p>
+<p>In terms of awka, it’s a bit of cheating. What awka does is translating awk code into C code and then compiling it, which makes it be that fast. The only problem with this, really, is that awka dynamically links the executable with a GPL’d library and I haven’t found a way to statically link it yet.</p>
+<p>This can be somehow sorted by turning the awk program into an AppImage. The linuxdeploy tool has been able so far to detect which libraries is a binary dynamically linked against and turn it into an AppImage with:</p>
+<pre><code>./linuxdeploy-x86_64.AppImage --appdir AppDir --create-desktop-file \
+    -e [executable] -i [some icon] --output appimage</code></pre>
+<p>There are other alternatives to statically link dynamic libraries but this is the one I found easiest to use.</p>
+<p>In general, to sort the whole thing, the steps that I would follow are:</p>
+<ol type="1">
+<li>linting the code with <code>gawk --lint</code> (this is the only step we need gawk for)</li>
+<li>compiling into a binary with <code>awka -X -f [awk file]</code></li>
+<li>changing the license of your project to GPL as we’ve just linked a GPL’ed library</li>
+<li><code>linuxdeploy --appdir $(mktemp -d) --create-desktop-file -e awka.out -i [icon] --output appimage</code></li>
+<li>Profit.</li>
+</ol>
+<p>Awk is already reasonably fast but this makes it even faster.</p>
+<h2 id="system-libraries">System libraries</h2>
+<p>This is one the things gawk has done well, but again, it’s probably not worth exchanging a few good functions by multiplying the complexity by 100. Good ol’ <code>system()</code> will work fine most of the times, and if it doesn’t, you should probably move to Go or C.</p>
+<p>You can always make your libraries and <a href="https://github.com/cristianrz/sawk">statically link them</a>.</p>
+<h2 id="lack-of-a-debugger">Lack of a debugger</h2>
+<p>I guess good ol’ print/printf…</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>These are some points I really wanted to address. I am hopping that I will address the rest at some point in the future. Awk is still not something that you could use for everything but it is much more bearable than what people are used to.</p>
+
+			<p id="to-top">
+				<a href="#top">^ Back to top ^</a>
+			</p>
+			<br>
+			<br>
+			<p id="copyright">Copyright © 2019 Cristian Aria</p>
+		</div>
+	</body>
+</html>
